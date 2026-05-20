@@ -13,16 +13,26 @@ get_db_connection = lambda: connect(
     autocommit=True
 )
 
+query = "INSERT INTO users (username,password) VALUES (%s,%s);"
+
+users = [
+    ("bob"," 786"),
+    ("aris", "thg"),
+    ("annie", "jjhg")
+]
+
+# with get_db_connection() as conn:
+#    with conn.cursor() as cur:
+
+#        cur.execute("""
+#            INSERT INTO users(username,password)
+#            Values
+#            ("Ben", "1234"),
+#            ("Yan", "5678")
+#        """)
+
+
 with get_db_connection() as conn:
     with conn.cursor() as cur:
-
-        cur.execute("""
-            INSERT INTO users(username,password) 
-            Values
-            ("Ben", "1234"),
-            ("Yan", "5678")
-        """)
-
-
-
+        cur.executemany(query,users)
 
