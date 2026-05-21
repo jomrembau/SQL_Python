@@ -1,0 +1,18 @@
+DROP DATABASE IF EXISTS test_database;
+CREATE DATABASE test_database;
+USE test_database;
+
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    unix_id VARCHAR(10) NOT NULL UNIQUE
+);
+
+CREATE TABLE courses (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    moniker VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL,
+    department VARCHAR(10) NOT NULL
+);
+
