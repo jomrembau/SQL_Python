@@ -23,3 +23,12 @@ def get_connection():
 
     return connection
 
+def reset():
+    connection = get_connection()
+
+    with connection.cursor() as cursor:
+        with open("ddl.sql", "r") as file:
+            for result in cursor.execute(file.read(), multi=True):
+                pass
+
+    connection.close()
