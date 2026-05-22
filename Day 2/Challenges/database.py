@@ -14,7 +14,7 @@ def get_connection():
             port="3306",
             user="root",
             password=env.get("MYSQL_PASSWORD"),
-            database="test_database",
+            database="test",
             autocommit=True
         )
 
@@ -45,4 +45,11 @@ def add_a_course(moniker,name,department):
         with conn.cursor() as cur:
             cur.execute("INSERT INTO courses(moniker,name,department) VALUES (%s, %s, %s);",
                         (moniker,name,department))
+            conn.commit()
+
+def add_a_prerequisite(course, prereq,min_grade):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO prerequisites(course,prereq,min_grade) VALUES (%s, %s, %s);",
+                        (course,prereq,min_grade))
             conn.commit()

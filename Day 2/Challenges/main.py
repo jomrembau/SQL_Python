@@ -1,6 +1,6 @@
 import typer
 from rich.console import Console
-from database import reset, add_a_student, add_a_course
+from database import reset, add_a_student, add_a_course, add_a_prerequisite
 
 app = typer.Typer()
 console = Console()
@@ -12,6 +12,10 @@ def add_student(first_name: str, last_name: str, unix_id: str):
 @app.command()
 def add_course(moniker: str,name: str, department: str):
     add_a_course(moniker,name, department)
+
+@app.command()
+def add_prereq(course: str, prereq: str, min_grade: int):
+    add_a_prerequisite(course,prereq,min_grade)
 
 @app.command()
 def reset_database():
