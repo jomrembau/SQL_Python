@@ -20,7 +20,7 @@ CREATE TABLE prerequisites (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     course VARCHAR(10) NOT NULL,
     prereq VARCHAR(10) NOT NULL,
-    min_grade INTEGER,
+    min_grade INTEGER NOT NULL,
     FOREIGN KEY (course) REFERENCES courses(moniker),
     FOREIGN KEY (prereq) REFERENCES courses(moniker),
     CHECK (min_grade >= 0 and min_grade <= 100)
