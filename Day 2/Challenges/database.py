@@ -14,7 +14,7 @@ def get_connection():
             port="3306",
             user="root",
             password=env.get("MYSQL_PASSWORD"),
-            database="test",
+            database="test_database",
             autocommit=True
         )
 
@@ -32,3 +32,17 @@ def reset():
                 pass
 
     connection.close()
+
+def add_a_student(first_name,last_name,unix_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO students(first_name,last_name,unix_id) VALUES (%s, %s, %s);",
+                        (first_name,last_name,unix_id))
+            conn.commit()
+
+def add_a_course(moniker,name,department):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO courses(moniker,name,department) VALUES (%s, %s, %s);",
+                        (moniker,name,department))
+            conn.commit()
