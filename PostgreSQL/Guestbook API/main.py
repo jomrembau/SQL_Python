@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from database import Database
 from pydantic import BaseModel, EmailStr, ValidationError, SecretStr
+from utils import get_password_hash, verify_password
 
 app = FastAPI()
 
@@ -33,11 +34,12 @@ def hello(db: Database = Depends(get_db)):
 @app.get("/register")
 def register(email: str, password: SecretStr):
     try:
-        user = User(email=email, password=password)
 
+        user = User(email=email, password=password)
+        hashed_password = get_password_hash(password.get_secret_value())
         return {
             "email": user.email,
-            "password": user.password.get_secret_value()
+            "password": hashed_password
         }
 
     except ValidationError:
