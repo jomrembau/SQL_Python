@@ -1,5 +1,16 @@
 from fastapi import FastAPI, Depends
 from database import Database
+from pydantic import BaseModel, EmailStr
+
+class User(BaseModel):
+    email: str
+    password: str
+
+class ValidatedUser(BaseModel):
+    email: EmailStr
+    password: str
+
+User(email="a@gmail.com", password= "b")
 
 app = FastAPI()
 
