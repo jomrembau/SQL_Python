@@ -1,18 +1,14 @@
 from fastapi import FastAPI, Depends
 from database import Database
-from pydantic import BaseModel, EmailStr
-
-class User(BaseModel):
-    email: str
-    password: str
-
-class ValidatedUser(BaseModel):
-    email: EmailStr
-    password: str
-
-User(email="a@gmail.com", password= "b")
+from pydantic import BaseModel, EmailStr, ValidationError, SecretStr
 
 app = FastAPI()
+
+
+class User(BaseModel):
+    email: EmailStr
+    password: SecretStr
+
 
 def get_db():
     db = Database()
@@ -20,18 +16,31 @@ def get_db():
     try:
         db.open()
         yield db
-
     finally:
         db.close()
 
+
 @app.get("/")
 def root():
-    return {"message" : "empty message. hello"}
+    return {"message": "empty message. hello"}
+
 
 @app.get("/hello")
 def hello(db: Database = Depends(get_db)):
-    return {"message" : "Hello, World"}
+    return {"message": "Hello, World"}
+
 
 @app.get("/register")
-def register(email: str, password: str):
-    return {"email": email, "password": password}
+def register(email: str, password: SecretStr):
+    try:
+        user = User(email=email, password=password)
+
+        return {
+            "email": user.email,
+            "password": user.password.get_secret_value()
+        }
+
+    except ValidationError:
+        return {
+            "Error": "Not a valid email"
+        }
