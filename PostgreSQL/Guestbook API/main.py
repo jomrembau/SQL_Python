@@ -13,8 +13,6 @@ def get_db():
     finally:
         db.close()
 
-
-
 @app.get("/")
 def root():
     return {"message" : "empty message. hello"}
@@ -22,3 +20,7 @@ def root():
 @app.get("/hello")
 def hello(db: Database = Depends(get_db)):
     return {"message" : "Hello, World"}
+
+@app.get("/register")
+def register(email: str, password: str):
+    return {"email": email, "password": password}
