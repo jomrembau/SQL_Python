@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Query, HTTPException
 from database import Database
 from pydantic import BaseModel, EmailStr, ValidationError, SecretStr
 from utils import get_password_hash, verify_password
+from psycopg2.errors import UniqueViolation
 
 app = FastAPI()
 
@@ -31,7 +32,7 @@ def hello(db: Database = Depends(get_db)):
     return {"message": "Hello, World"}
 
 
-@app.post("/register")
+@app.post("/register", status_code=201)
 def register(email: str, password: SecretStr = Query(default=None, min_length=8), db: Database = Depends(get_db)):
     try:
 
@@ -46,6 +47,7 @@ def register(email: str, password: SecretStr = Query(default=None, min_length=8)
         }
 
     except ValidationError:
-        return {
-            "Error": "Not a valid email"
-        }
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    except UniqueViolation:
+        raise HTTPException(status_code=400, detail="Email already exists.")
