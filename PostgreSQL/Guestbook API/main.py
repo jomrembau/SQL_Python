@@ -39,11 +39,13 @@ def register(email: str, password: SecretStr = Query(default=None, min_length=8)
         user = User(email=email, password=password)
         hashed_password = get_password_hash(password.get_secret_value())
 
-        with db.conn:
-            db.cursor.execute("INSERT INTO users (email,password) VALUES (%s,%s)",(user.email, hashed_password))
+        # with db.conn:
+        #     db.cursor.execute("INSERT INTO users (email,password) VALUES (%s,%s)",(user.email, hashed_password))
+
+        user_id = db.write('users', ['email', 'password'], [email,hashed_password])
 
         return {
-            "message": "User successfully created."
+            "message": "User successfully created.","user_id": user_id
         }
 
     except ValidationError:

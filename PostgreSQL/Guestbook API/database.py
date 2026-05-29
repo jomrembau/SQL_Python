@@ -1,4 +1,4 @@
-from psycopg2 import connect
+from psycopg2 import connect, sql
 from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
@@ -24,3 +24,14 @@ class Database:
     def close(self):
         self.cursor.close()
         self.conn.close()
+
+    def write(self, table: str, columns: list, data: list[str]):
+        query = sql.SQL("INSERT INTO {} ({}) VALUES ({}) RETURNING id").format(
+            sql.Identifier(table),
+            sql.SQL(",").join(map(sql.Identifier, columns)),
+            sql.SQL(",").join(map(sql.Literal, data)),
+        )
+
+        self.cursor.execute(query)
+        self.conn.commit()
+        return self.cursor.fetchone().get("id")
