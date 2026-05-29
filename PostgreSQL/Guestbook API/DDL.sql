@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL,
     active BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT current_timestamp,
-    activated at TIMESTAMP
+    activated_at TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tokens (
