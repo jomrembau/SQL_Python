@@ -36,7 +36,9 @@ class Database:
         self.conn.commit()
         return self.cursor.fetchone().get("id")
 
-    def get_one(self, table: str, columns: list[str], where: dict = None):
+
+
+    def get(self, table: str, columns: list[str], limit: int = None, where: dict = None):
         query = sql.SQL("SELECT {} FROM {}").format(
             sql.SQL(',').join(map(sql.Identifier, columns)),
             sql.Identifier(table)
@@ -49,8 +51,18 @@ class Database:
                         lambda x: sql.SQL("{} = {}").format(
                             sql.Identifier(x),
                             sql.Literal(where.get(x))
-                        ),where)
+                        ), where)
                 )
             )
+
+        if limit:
+            query += sql.SQL("LIMIT {}").format(sql.Literal(limit))
+
         self.cursor.execute(query)
-        return self.cursor.fetchone()
+        return self.cursor.fetchall()
+
+    def get_one(self, table: str, columns: list[str], where: dict = None):
+        result =  self.get(table, columns, 1, where)
+
+        if len(result):
+            return result[0]
