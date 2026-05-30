@@ -35,3 +35,22 @@ class Database:
         self.cursor.execute(query)
         self.conn.commit()
         return self.cursor.fetchone().get("id")
+
+    def get_one(self, table: str, columns: list[str], where: dict = None):
+        query = sql.SQL("SELECT {} FROM {}").format(
+            sql.SQL(',').join(map(sql.Identifier, columns)),
+            sql.Identifier(table)
+        )
+
+        if where:
+            query += sql.SQL(" WHERE {}").format(
+                sql.SQL(" AND ").join(
+                    map(
+                        lambda x: sql.SQL("{} = {}").format(
+                            sql.Identifier(x),
+                            sql.Literal(where.get(x))
+                        ),where)
+                )
+            )
+        self.cursor.execute(query)
+        return self.cursor.fetchone()

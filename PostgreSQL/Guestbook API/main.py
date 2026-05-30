@@ -11,11 +11,9 @@ app = FastAPI(
     description= "Feedbacks and comments."
 )
 
-
 class User(BaseModel):
     email: EmailStr
     password: SecretStr
-
 
 def get_db():
     db = Database()
@@ -26,16 +24,13 @@ def get_db():
     finally:
         db.close()
 
-
 @app.get("/")
 def root():
     return {"message": "empty message. hello"}
 
-
 @app.get("/hello")
 def hello(db: Database = Depends(get_db)):
     return {"message": "Hello, World"}
-
 
 @app.post("/register", status_code=201, tags=["accounts"])
 def register(email: str, password: SecretStr = Query(default=None, min_length=8), db: Database = Depends(get_db)):
@@ -59,7 +54,14 @@ def register(email: str, password: SecretStr = Query(default=None, min_length=8)
     except UniqueViolation:
         raise HTTPException(status_code=400, detail="Email already exists.")
 
-@app.post("Activate", tags=["accounts"])
-def activate(token: str):
-    pass
+@app.post("activate", tags=["accounts"])
+def activate(token: str, db: Database = Depends(get_db) ):
+
+    token = db.get_one("tokens", ["token", "user_id"], where= {"token": token})
+
+    if not token:
+        raise HTTPException(status_code=404, detail="Token not found.")
+
+    else:
+        return {"result": token.get("token"), "user_id": token.get("user_id")}
 
